@@ -1,1 +1,70 @@
 # ClimbMate
+
+攀岩素材管理核心逻辑（Swift Package），支持未来 iOS 与 Windows 双端。
+
+## 模块结构
+
+- `ClimbMateCore`：跨平台业务核心（标签、过滤、打点、播放规则）
+- `ClimbMateCoreiOS`：iOS 平台默认配置封装
+- `ClimbMateCoreWindows`：Windows 平台能力与数据存储封装
+- `ClimbMateWindowsCLI`：可直接运行的 Windows 命令行版本（用于本地验证）
+
+## Windows 可运行版本（你可以直接拉取后验证）
+
+### 1) 构建
+
+```bash
+swift build -c release --product ClimbMateWindowsCLI
+```
+
+### 2) 初始化示例数据
+
+```bash
+swift run ClimbMateWindowsCLI init-sample --file ./data/videos.json
+```
+
+### 3) 列出全部视频
+
+```bash
+swift run ClimbMateWindowsCLI list --file ./data/videos.json
+```
+
+### 4) 按路线/难度过滤
+
+```bash
+swift run ClimbMateWindowsCLI filter --file ./data/videos.json --route sport --grade 5.10a
+```
+
+### 5) 按日期范围过滤
+
+```bash
+swift run ClimbMateWindowsCLI filter --file ./data/videos.json --from 2026-01-01 --to 2026-12-31
+```
+
+## 已实现能力
+
+- 标签体系
+  - `sport` / `bouldering`
+  - 路线类型驱动难度可选值
+- 视频过滤
+  - 标签过滤
+  - 日期过滤
+  - 平台支持格式过滤
+- 单视频笔记
+  - 打点排序、前后跳转
+- 播放逻辑
+  - 线性播放
+  - 遇打点暂停 + 手动恢复
+  - seek 拖拽
+- Windows 数据能力
+  - JSON 存储（`WindowsVideoStore`）
+  - 记录到核心模型转换（`WindowsVideoRecord -> VideoAsset`）
+  - 可组合过滤服务（`WindowsVideoService`）
+
+## 测试
+
+```bash
+swift test
+```
+
+覆盖核心模块测试 + Windows 模块测试。
