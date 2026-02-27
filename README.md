@@ -8,8 +8,28 @@
 - `ClimbMateCoreiOS`：iOS 平台默认配置封装
 - `ClimbMateCoreWindows`：Windows 平台能力与数据存储封装
 - `ClimbMateWindowsCLI`：可直接运行的 Windows 命令行/交互模式版本（用于本地验证）
+- `windows/ClimbMateWpfShell`：Windows 桌面 GUI（C# WPF 壳，按钮驱动 CLI）
 
 ## Windows 可运行版本（你可以直接拉取后验证）
+
+### A) Windows 桌面 GUI（WPF）
+
+> 这个 GUI 壳用于桌面交互操作（按钮方式），内部调用 `ClimbMateWindowsCLI`，从而复用 Swift 核心逻辑。
+
+在 Windows（PowerShell）中执行：
+
+```powershell
+cd windows/ClimbMateWpfShell
+dotnet restore
+dotnet run
+```
+
+打开窗口后：
+
+- `Repo Path` 填仓库根目录（包含 `Package.swift`）
+- `Data File` 默认 `./data/videos.json`
+- 点击 `Init Sample` 初始化数据
+- 点击 `List Videos` / `Filter Route+Grade` / `Filter Date` 操作
 
 ### 1) 构建
 
