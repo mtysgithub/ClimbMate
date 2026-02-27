@@ -170,41 +170,6 @@ public struct VideoLibrary: Sendable {
     }
 }
 
-/// Cross-platform application service for iOS / Windows UI layers.
-/// UI can call this shared service without duplicating core logic per platform.
-public struct CoreVideoManager: Sendable {
-    public let platformConfiguration: PlatformBuildConfiguration
-
-    public init(platformConfiguration: PlatformBuildConfiguration) {
-        self.platformConfiguration = platformConfiguration
-    }
-
-    public func compatibleVideos(from videos: [VideoAsset]) -> [VideoAsset] {
-        VideoLibrary(videos: videos).compatible(with: platformConfiguration)
-    }
-
-    public func filteredVideos(from videos: [VideoAsset], query: VideoFilterQuery) -> [VideoAsset] {
-        let compatible = compatibleVideos(from: videos)
-        return VideoLibrary(videos: compatible).filter(using: query)
-    }
-
-    public func addMarker(_ marker: NoteMarker, to video: VideoAsset) -> VideoAsset {
-        var updatedMarkers = video.markers
-        updatedMarkers.append(marker)
-        return VideoAsset(
-            id: video.id,
-            createdAt: video.createdAt,
-            containerFormat: video.containerFormat,
-            tags: video.tags,
-            markers: updatedMarkers
-        )
-    }
-
-    public func makePlaybackController(for video: VideoAsset, mode: PlaybackMode) -> PlaybackController {
-        PlaybackController(mode: mode, timeline: NoteTimeline(markers: video.markers))
-    }
-}
-
 public enum PlaybackMode: Sendable {
     case linear
     case pauseOnMarker

@@ -4,32 +4,12 @@
 
 ## 模块结构
 
-- `ClimbMateCore`：跨平台业务核心（标签、过滤、打点、播放规则 + CoreVideoManager 应用服务）
+- `ClimbMateCore`：跨平台业务核心（标签、过滤、打点、播放规则）
 - `ClimbMateCoreiOS`：iOS 平台默认配置封装
 - `ClimbMateCoreWindows`：Windows 平台能力与数据存储封装
-- `ClimbMateWindowsCLI`：可直接运行的 Windows 命令行/交互模式版本（用于本地验证）
-- `windows/ClimbMateWpfShell`：Windows 桌面 GUI（C# WPF 壳，按钮驱动 CLI）
+- `ClimbMateWindowsCLI`：可直接运行的 Windows 命令行版本（用于本地验证）
 
 ## Windows 可运行版本（你可以直接拉取后验证）
-
-### A) Windows 桌面 GUI（WPF）
-
-> 这个 GUI 壳用于桌面交互操作（按钮方式），内部调用 `ClimbMateWindowsCLI`，从而复用 Swift 核心逻辑。
-
-在 Windows（PowerShell）中执行：
-
-```powershell
-cd windows/ClimbMateWpfShell
-dotnet restore
-dotnet run
-```
-
-打开窗口后：
-
-- `Repo Path` 填仓库根目录（包含 `Package.swift`）
-- `Data File` 默认 `./data/videos.json`
-- 点击 `Init Sample` 初始化数据
-- 点击 `List Videos` / `Filter Route+Grade` / `Filter Date` 操作
 
 ### 1) 构建
 
@@ -42,20 +22,6 @@ swift build -c release --product ClimbMateWindowsCLI
 ```bash
 swift run ClimbMateWindowsCLI init-sample --file ./data/videos.json
 ```
-
-### 2.1) 交互模式（推荐）
-
-```bash
-swift run ClimbMateWindowsCLI interactive --file ./data/videos.json
-```
-
-进入菜单后可以直接选：
-
-- 初始化示例数据
-- 查看视频
-- 路线+难度过滤
-- 日期范围过滤
-- 给视频添加打点
 
 ### 3) 列出全部视频
 
@@ -94,8 +60,6 @@ swift run ClimbMateWindowsCLI filter --file ./data/videos.json --from 2026-01-01
   - JSON 存储（`WindowsVideoStore`）
   - 记录到核心模型转换（`WindowsVideoRecord -> VideoAsset`）
   - 可组合过滤服务（`WindowsVideoService`）
-- 跨端复用核心应用服务
-  - `CoreVideoManager`：UI/平台层统一调用（iOS 与 Windows 共用一套核心编排）
 
 ## 测试
 

@@ -35,15 +35,4 @@ final class ClimbMateCoreWindowsTests: XCTestCase {
 
         XCTAssertEqual(result.map(\ .id), ["1"])
     }
-
-    func testManagerCanBeUsedByWindowsAdapter() throws {
-        let service = WindowsVideoService()
-        let records = service.sampleRecords(now: Date(timeIntervalSince1970: 1_700_000_000))
-        let assets = try service.listAssets(records: records)
-
-        let manager = CoreVideoManager(platformConfiguration: ClimbMateCoreWindows.defaultConfiguration)
-        let compatible = manager.compatibleVideos(from: assets)
-
-        XCTAssertEqual(compatible.count, 2)
-    }
 }
