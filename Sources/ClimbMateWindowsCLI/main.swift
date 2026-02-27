@@ -17,9 +17,6 @@ struct ClimbMateWindowsCLI {
         }
 
         switch command {
-        case "interactive":
-            let file = try requiredOption("--file", in: arguments)
-            try interactive(file: file)
         case "init-sample":
             let file = try requiredOption("--file", in: arguments)
             try initializeSample(file: file)
@@ -96,98 +93,6 @@ struct ClimbMateWindowsCLI {
         return date
     }
 
-    private func interactive(file: String) throws {
-        let url = URL(fileURLWithPath: file)
-        print("Entering interactive mode. Data file: \(url.path)")
-
-        var shouldQuit = false
-        while !shouldQuit {
-            print("""
-
-            ===== ClimbMate Windows Interactive =====
-            1) Initialize sample data
-            2) List videos
-            3) Filter by route + grade
-            4) Filter by date range
-            5) Add marker to a video
-            0) Exit
-            """)
-
-            guard let choice = readLine(strippingNewline: true) else {
-                continue
-            }
-
-            switch choice {
-            case "1":
-                try initializeSample(file: file)
-            case "2":
-                try list(file: file)
-            case "3":
-                print("Route (sport/bouldering): ", terminator: "")
-                let routeRaw = readLine(strippingNewline: true) ?? ""
-                print("Grade (e.g. 5.10a or V4): ", terminator: "")
-                let grade = readLine(strippingNewline: true) ?? ""
-                try filter(file: file, route: routeRaw, grade: grade, from: nil, to: nil)
-            case "4":
-                print("From date (YYYY-MM-DD): ", terminator: "")
-                let from = readLine(strippingNewline: true)
-                print("To date (YYYY-MM-DD): ", terminator: "")
-                let to = readLine(strippingNewline: true)
-                try filter(file: file, route: nil, grade: nil, from: from, to: to)
-            case "5":
-                try addMarker(file: file)
-            case "0":
-                shouldQuit = true
-                print("Bye.")
-            default:
-                print("Unknown option: \(choice)")
-            }
-        }
-    }
-
-    private func addMarker(file: String) throws {
-        let url = URL(fileURLWithPath: file)
-        var records = try store.load(from: url)
-
-        if records.isEmpty {
-            print("No videos found. Run init-sample first.")
-            return
-        }
-
-        print("Video ID: ", terminator: "")
-        let videoID = readLine(strippingNewline: true) ?? ""
-        print("At second (int): ", terminator: "")
-        let secondRaw = readLine(strippingNewline: true) ?? "0"
-        print("Marker text: ", terminator: "")
-        let text = readLine(strippingNewline: true) ?? ""
-
-        guard let index = records.firstIndex(where: { $0.id == videoID }) else {
-            print("Video not found: \(videoID)")
-            return
-        }
-
-        let second = Int(secondRaw) ?? 0
-        let marker = NoteMarker(
-            id: UUID().uuidString,
-            atSecond: second,
-            text: text,
-            imagePath: nil
-        )
-
-        let old = records[index]
-        records[index] = WindowsVideoRecord(
-            id: old.id,
-            createdAt: old.createdAt,
-            containerFormat: old.containerFormat,
-            routeType: old.routeType,
-            grade: old.grade,
-            markers: old.markers + [marker]
-        )
-
-        try store.save(records, to: url)
-        print("Marker added to \(videoID).")
-    }
-
     private func requiredOption(_ name: String, in arguments: [String]) throws -> String {
         guard let value = optionalOption(name, in: arguments) else {
             throw CLIError.invalidArguments("Missing required option: \(name)")
@@ -207,7 +112,6 @@ struct ClimbMateWindowsCLI {
         ClimbMateWindowsCLI
 
         Commands:
-          interactive --file <path>
           init-sample --file <path>
           list --file <path>
           filter --file <path> [--route sport|bouldering] [--grade <grade>] [--from YYYY-MM-DD] [--to YYYY-MM-DD]

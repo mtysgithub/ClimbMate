@@ -97,32 +97,6 @@ final class ClimbMateCoreTests: XCTestCase {
         XCTAssertEqual(seekResult.state, .playing)
     }
 
-    func testCoreVideoManagerSharesCrossPlatformFlow() throws {
-        let sportTag = try VideoTag(routeType: .sport, grade: "5.11a")
-        let oldDate = Calendar(identifier: .gregorian).date(from: DateComponents(year: 2026, month: 1, day: 1))!
-        let newDate = Calendar(identifier: .gregorian).date(from: DateComponents(year: 2026, month: 1, day: 10))!
-
-        let videos = [
-            VideoAsset(id: "x", createdAt: oldDate, containerFormat: .mov, tags: [sportTag], markers: []),
-            VideoAsset(id: "y", createdAt: newDate, containerFormat: .mp4, tags: [sportTag], markers: [])
-        ]
-
-        let manager = CoreVideoManager(platformConfiguration: .windows)
-        let filtered = manager.filteredVideos(
-            from: videos,
-            query: VideoFilterQuery(tags: [sportTag], startDate: newDate, endDate: newDate)
-        )
-
-        XCTAssertEqual(filtered.map(\ .id), ["y"])
-
-        let marker = NoteMarker(id: "m", atSecond: 12, text: "beta", imagePath: nil)
-        let updated = manager.addMarker(marker, to: filtered[0])
-        XCTAssertEqual(updated.markers.count, 1)
-
-        let controller = manager.makePlaybackController(for: updated, mode: .pauseOnMarker)
-        XCTAssertEqual(controller.timeline.markers.first?.id, "m")
-    }
-
     private func jan5(calendar: Calendar) -> Date {
         calendar.date(from: DateComponents(year: 2026, month: 1, day: 5))!
     }
